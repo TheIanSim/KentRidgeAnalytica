@@ -25,7 +25,9 @@ class Node:
         self.neighbours = defaultdict()
 
     def add_neighbour(self, neighbour: Node, strength: int) -> None:
-        self.neighbours[neighbour] = strength
+        # check if neighbour is already in dictionary
+        assert neighbour.user_id not in self.neighbours
+        self.neighbours[neighbour.user_id] = strength
 
 
 class Graph:
@@ -33,21 +35,29 @@ class Graph:
         self.vertices = {}
 
     def add_vertex(self, v: Node) -> None:
+        # do not allow adding if already inside
+        assert v.user_id not in self.vertices
         self.vertices[v.user_id] = v
 
     def add_edge(self, v1: Node, v2: Node, strength: int) -> None:
-        assert v1 in self.vertices
-        assert v2 in self.vertices
-
-        self.vertices[v1].add_neighbour(v2, strength)
-        self.vertices[v2].add_neighbour(v1, strength)
+        # check both nodes are in the graph first
+        assert v1.user_id in self.vertices
+        assert v2.user_id in self.vertices
+        # add edge strength to both (symmetric relationship)
+        self.vertices[v1.user_id].add_neighbour(v2, strength)
+        self.vertices[v2.user_id].add_neighbour(v1, strength)
 
     def remove_vertex(self, node_id: int) -> None:
+        # check node is in graph
+        assert node_id in self.vertices
         node: Node = self.vertices[node_id]
-        for n in node.neighbours:
-            del n.neighbours[node_id]
+        # remove node from node's neighbours adjacency dictionary
+        for neigh_id in node.neighbours:
+            neighbour = self.vertices[neigh_id]
+            del neighbour.neighbours[node_id]
         del self.vertices[node_id]
 
     def get_node(self, node_id: int) -> Node:
+        assert node_id in self.vertices
         return self.vertices[node_id]
 
