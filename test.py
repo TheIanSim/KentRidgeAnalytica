@@ -1,5 +1,5 @@
 import unittest
-from classes import Graph, Node
+from classes import Graph, Node, Simulation
 
 
 class TestNode(unittest.TestCase):
@@ -90,6 +90,40 @@ class TestGraph(unittest.TestCase):
         self.assertEqual(self.test_graph.get_node(0), self.test_node_0)
         with self.assertRaises(AssertionError):
             self.test_graph.get_node(1)
+
+
+class TestSimulation(unittest.TestCase):
+    def setUp(self):
+        self.test_graph = Graph()
+        self.test_node_0 = Node(0, 0.1, 1, 1, 1, 1, 1, 1)
+        self.test_node_1 = Node(1, 0.2, 2, 2, 2, 2, 2, 2)
+        self.test_node_2 = Node(2, 0.3, 1, 2, 3, 4, 5, 6)
+        self.test_graph.add_vertex(self.test_node_0)
+        self.test_graph.add_vertex(self.test_node_1)
+        self.test_graph.add_vertex(self.test_node_2)
+        self.test_graph.add_edge(self.test_node_0, self.test_node_1, 30)
+        self.test_graph.add_edge(self.test_node_1, self.test_node_2, 50)
+
+        self.test_sim = Simulation()
+        self.test_sim.load_graph(self.test_graph)
+
+    def test_spread(self):
+        res1 = min(1, Simulation.sigmoid(30) * 0.15)
+        res2 = min(1, Simulation.sigmoid(60) * 0.25 * 1.2)
+        self.assertAlmostEqual(Simulation.spread(self.test_node_0, self.test_node_1), res1)
+        self.assertAlmostEqual(Simulation.spread(self.test_node_1, self.test_node_2), res2)
+
+    def test_calc_new_score(self):
+        res = (
+            Simulation.spread(self.test_node_0, self.test_node_1)
+            + Simulation.spread(self.test_node_2, self.test_node_1)
+        ) / 2
+        self.assertAlmostEqual(self.test_sim.calc_new_score(self.test_node_1), res)
+
+    def test_run_one_timestep(self):
+        print(self.test_sim.graph.get_scores())
+        self.test_sim.run_one_timestep()
+        print(self.test_sim.graph.get_scores())
 
 
 if __name__ == "__main__":

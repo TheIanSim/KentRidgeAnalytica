@@ -1,5 +1,6 @@
 from __future__ import annotations
 from collections import defaultdict
+import math
 
 
 class Node:
@@ -34,6 +35,9 @@ class Graph:
     def __init__(self) -> None:
         self.vertices = {}
 
+    def get_scores(self):
+        return dict([(v, self.vertices[v].score) for v in self.vertices])
+
     def add_vertex(self, v: Node) -> None:
         # do not allow adding if already inside
         assert v.user_id not in self.vertices
@@ -61,33 +65,71 @@ class Graph:
         assert node_id in self.vertices
         return self.vertices[node_id]
 
+
 class Simulation:
     def __init__(self):
         self.graph = Graph()
 
-    def load_vertices(self, file_name):
-        #TODO
+    def load_graph(self, graph):
+        self.graph = graph
+
+    #=================== IO STUFF ==============================
+
+    def load_vertices_from_file(self, file_name):
+        # TODO
         pass
 
-    def load_edges(self, file_name):
-        #TODO
+    def load_edges_from_file(self, file_name):
+        # TODO
         pass
+
+    def data_out_to_file(self, filename):
+        # TODO
+        pass
+
+    #===========================================================
 
     @staticmethod
-    def spread(source: Node, target: Node):
-        pass
-        
+    def sigmoid(x):
+        return 1 / (1 + math.exp(-x))
+
+    @staticmethod
+    def spread(source: Node, target: Node) -> float:
+        assert target.user_id in source.neighbours, "target not in source neighbours"
+        if source != target:
+            multiplier = 1
+            similarity_bonuns = 1.2
+            for att in ["education", "age"]:
+                if getattr(source, att) == getattr(target, att):
+                    multiplier *= similarity_bonuns
+            num_msgs = source.neighbours[target.user_id]
+            new_target_score = (source.score + target.score) / 2
+            new_target_score = (
+                new_target_score * Simulation.sigmoid(num_msgs) * multiplier
+            )
+            new_target_score = min(1, new_target_score)
+            return new_target_score
+
+    def calc_new_score(self, vertex: Node) -> float:
+        total = []
+        for n_id in vertex.neighbours:
+            n = self.graph.vertices[n_id]
+            total.append(Simulation.spread(vertex, n))
+        return sum(total) / len(total)
 
     def run_one_timestep(self):
         # check if graph is empty
         assert self.graph.vertices, "graph empty"
-        
-        i = 0
-        i += 1
-        yield i
+        new_node_scores = {}
+
+        for vertex_id in self.graph.vertices:
+            if vertex_id not in new_node_scores:
+                vertex = self.graph.vertices[vertex_id]
+                vertex_new_score = self.calc_new_score(vertex)
+                new_node_scores[vertex_id] = vertex_new_score
+
+        for vertex_id in self.graph.vertices:
+            v = self.graph.vertices[vertex_id]
+            v.score = new_node_scores[v.user_id]
 
 
-    def data_out(self):
-        pass
-
-    
