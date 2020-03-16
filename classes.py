@@ -61,3 +61,33 @@ class Graph:
         assert node_id in self.vertices
         return self.vertices[node_id]
 
+class Simulation:
+    def __init__(self):
+        self.graph = Graph()
+
+    def load_vertices(self, file_name):
+        #TODO
+        pass
+
+    def load_edges(self, file_name):
+        #TODO
+        pass
+
+    @staticmethod
+    def spread(source: Node, target: Node):
+        pass
+        
+
+    def run_one_timestep(self):
+        # check if graph is empty
+        assert self.graph.vertices, "graph empty"
+        
+        i = 0
+        i += 1
+        yield i
+
+
+    def data_out(self):
+        pass
+
+    
