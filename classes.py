@@ -1,6 +1,7 @@
-from __future__ import annotations
+#from __future__ import annotations
 from collections import defaultdict
 import math
+import pandas as pd
 
 
 class Node:
@@ -8,24 +9,26 @@ class Node:
         self,
         user_id: int,
         score: float,
-        education: int,
-        age: int,
         gender: int,
+        age: int,
+        horoscope: int,
         language: int,
         locale: int,
-        horoscope: int,
+        education: int,
+ 
     ) -> None:
         self.user_id = user_id
-        self.score = score
-        self.education = education
-        self.age = age
+        self.score = score #note that this attribute is hard coded as 0.1 by default in the load_vertices method instead of being read from the excel file like the others
         self.gender = gender
+        self.age = age
+        self.horoscope = horoscope
         self.language = language
         self.locale = locale
-        self.horoscope = horoscope
+        self.education = education
         self.neighbours = defaultdict()
 
-    def add_neighbour(self, neighbour: Node, strength: int) -> None:
+    #removed class check of neighbour: Node to resolve NameError: name 'Node' is not defined.
+    def add_neighbour(self, neighbour, strength: int) -> None:
         # check if neighbour is already in dictionary
         assert neighbour.user_id not in self.neighbours
         self.neighbours[neighbour.user_id] = strength
@@ -69,6 +72,7 @@ class Graph:
 class Simulation:
     def __init__(self):
         self.graph = Graph()
+        self.output = Output()
 
     def load_graph(self, graph):
         self.graph = graph
@@ -76,16 +80,23 @@ class Simulation:
     #=================== IO STUFF ==============================
 
     def load_vertices_from_file(self, file_name):
-        # TODO
-        pass
+        Nodes = pd.read_csv(file_name)
+        Network = self.graph
+        for index, row in Nodes.iterrows():
+            new_node = Node(row.iloc[0], 0.1, row.iloc[1], row.iloc[2], row.iloc[3], row.iloc[4], row.iloc[5], row.iloc[6])
+            Network.add_vertex(new_node)
 
     def load_edges_from_file(self, file_name):
-        # TODO
-        pass
+        Edges = pd.read_csv(file_name)
+        for index, row in Edges.iterrows():
+            source = self.graph.get_node(row.iloc[0])
+            target = self.graph.get_node(row.iloc[1])
+            source.add_neighbour(target,row.iloc[2])
+            target.add_neighbour(source,row.iloc[2])
+
 
     def data_out_to_file(self, filename):
-        # TODO
-        pass
+        self.output.df.to_csv(filename)
 
     #===========================================================
 
@@ -132,4 +143,33 @@ class Simulation:
             v = self.graph.vertices[vertex_id]
             v.score = new_node_scores[v.user_id]
 
+class Output:
+    def __init__(self) -> None:
+        df = pd.DataFrame(columns=['Id','Label','Timeset','Score'])
+        #df.set_index('Id')
+        self.df = df
 
+    def add_timestep_scores(self,score_dict : dict, timestep : int) -> None:
+        output_df = self.df
+        if timestep == 0: #first time stamp
+            for k,v in score_dict.items():
+                if v<0.12:
+                    v = 1
+                elif v>= 0.12 and v < 0.16:
+                    v = 2
+                else:
+                    v = 3
+                new_row = {'Id':k,'Label':k,'Timeset':[timestep],'Score':"["+str(timestep)+", "+str(v)+"]"}
+                output_df = output_df.append(new_row, ignore_index=True)
+
+        else:
+            for k,v in score_dict.items():
+                if v<0.12:
+                    v = 1
+                elif v>= 0.12 and v < 0.16:
+                    v = 2
+                else:
+                    v = 3
+                output_df.loc[k,'Timeset'].append(timestep)
+                output_df.loc[k,'Score'] = output_df.loc[k,'Score'] + "; ["+ str(timestep)+", "+str(v) +"]"
+        self.df = output_df
