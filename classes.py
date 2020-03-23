@@ -68,6 +68,9 @@ class Graph:
         assert node_id in self.vertices
         return self.vertices[node_id]
 
+    def set_bad_guy(self, node_id: int, bad_guy_score: float) -> Node:
+        assert node_id in self.vertices
+        self.vertices[node_id].score = bad_guy_score
 
 class Simulation:
     def __init__(self):
@@ -79,12 +82,16 @@ class Simulation:
 
     #=================== IO STUFF ==============================
 
-    def load_vertices_from_file(self, file_name):
+    def load_vertices_from_file(self, file_name, bad_guys):
+        bad_guy_score = 1
+        civilian_score = 0.01
         Nodes = pd.read_csv(file_name)
         Network = self.graph
         for index, row in Nodes.iterrows():
-            new_node = Node(row.iloc[0], 0.1, row.iloc[1], row.iloc[2], row.iloc[3], row.iloc[4], row.iloc[5], row.iloc[6])
+            new_node = Node(row.iloc[0], civilian_score, row.iloc[1], row.iloc[2], row.iloc[3], row.iloc[4], row.iloc[5], row.iloc[6])
             Network.add_vertex(new_node)
+        for bad_guy in bad_guys:
+            Network.set_bad_guy(bad_guy, bad_guy_score)
 
     def load_edges_from_file(self, file_name):
         Edges = pd.read_csv(file_name)
@@ -153,23 +160,11 @@ class Output:
         output_df = self.df
         if timestep == 0: #first time stamp
             for k,v in score_dict.items():
-                if v<0.12:
-                    v = 1
-                elif v>= 0.12 and v < 0.16:
-                    v = 2
-                else:
-                    v = 3
                 new_row = {'Id':k,'Label':k,'Timeset':[timestep],'Score':"["+str(timestep)+", "+str(v)+"]"}
                 output_df = output_df.append(new_row, ignore_index=True)
 
         else:
             for k,v in score_dict.items():
-                if v<0.12:
-                    v = 1
-                elif v>= 0.12 and v < 0.16:
-                    v = 2
-                else:
-                    v = 3
                 output_df.loc[k,'Timeset'].append(timestep)
                 output_df.loc[k,'Score'] = output_df.loc[k,'Score'] + "; ["+ str(timestep)+", "+str(v) +"]"
         self.df = output_df
