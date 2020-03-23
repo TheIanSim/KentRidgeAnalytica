@@ -102,7 +102,7 @@ class Simulation:
 
     @staticmethod
     def sigmoid(x):
-        return 1 / (1 + math.exp(-x))
+        return 2 / (1 + math.exp(-x/100)) + 1
 
     @staticmethod
     def spread(source: Node, target: Node) -> float:
