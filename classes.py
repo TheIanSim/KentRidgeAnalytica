@@ -40,6 +40,14 @@ class Graph:
 
     def get_scores(self):
         return dict([(v, self.vertices[v].score) for v in self.vertices])
+    
+    def get_total_infected(self):
+        scores = self.get_scores()
+        max = len(scores)
+        total = 0
+        for key in scores:
+            total += scores[key]
+        return total/max
 
     def add_vertex(self, v: Node) -> None:
         # do not allow adding if already inside
@@ -73,9 +81,10 @@ class Graph:
         self.vertices[node_id].score = bad_guy_score
 
 class Simulation:
-    def __init__(self):
+    def __init__(self,bad_guys):
         self.graph = Graph()
         self.output = Output()
+        self.bad_guys = bad_guys
 
     def load_graph(self, graph):
         self.graph = graph
@@ -84,7 +93,7 @@ class Simulation:
 
     def load_vertices_from_file(self, file_name, bad_guys):
         bad_guy_score = 1
-        civilian_score = 0.01
+        civilian_score = 0
         Nodes = pd.read_csv(file_name)
         Network = self.graph
         for index, row in Nodes.iterrows():
@@ -116,24 +125,28 @@ class Simulation:
         assert target.user_id in source.neighbours, "target not in source neighbours"
         if source != target:
             multiplier = 1
-            similarity_bonuns = 1.2
-            for att in ["education", "age"]:
+            similarity_bonuns = 1.05
+            for att in ["education", "age", "gender"]:
                 if getattr(source, att) == getattr(target, att):
                     multiplier *= similarity_bonuns
             num_msgs = source.neighbours[target.user_id]
-            new_target_score = (source.score + target.score) / 2
+            #new_target_score = (source.score + target.score) / 2
             new_target_score = (
-                new_target_score * Simulation.sigmoid(num_msgs) * multiplier
+                target.score * Simulation.sigmoid(num_msgs) * multiplier
             )
             new_target_score = min(1, new_target_score)
             return new_target_score
 
     def calc_new_score(self, vertex: Node) -> float:
+        if vertex.user_id in self.bad_guys:
+            return vertex.score
         total = []
         for n_id in vertex.neighbours:
             n = self.graph.vertices[n_id]
             total.append(Simulation.spread(vertex, n))
-        return sum(total) / len(total)
+            #total.append(vertex.score)
+        out = sum(total) / len(total)
+        return out * 0.1 + 0.9 * vertex.score
 
     def run_one_timestep(self):
         # check if graph is empty
@@ -149,6 +162,9 @@ class Simulation:
         for vertex_id in self.graph.vertices:
             v = self.graph.vertices[vertex_id]
             v.score = new_node_scores[v.user_id]
+        
+        print(self.graph.get_total_infected())
+        #print(self.graph.get_scores()[0])
 
 class Output:
     def __init__(self) -> None:
