@@ -80,11 +80,19 @@ class Graph:
         assert node_id in self.vertices
         self.vertices[node_id].score = bad_guy_score
 
+    def set_good_guys(self, good_guys: list):
+        good_guy_score = -1
+        for good_guy in good_guys:
+            assert good_guy in self.vertices
+            self.vertices[good_guy].score = good_guy_score
+
 class Simulation:
-    def __init__(self,bad_guys):
+    def __init__(self,bad_guys, good_guys, good_guys_enter_timestep):
         self.graph = Graph()
         self.output = Output()
         self.bad_guys = bad_guys
+        self.good_guys = good_guys
+        self.good_guys_enter_timestep = good_guys_enter_timestep
 
     def load_graph(self, graph):
         self.graph = graph
@@ -134,11 +142,16 @@ class Simulation:
             new_target_score = (
                 target.score * Simulation.sigmoid(num_msgs) * multiplier
             )
-            new_target_score = min(1, new_target_score)
+            if new_target_score >= 0: 
+                new_target_score = min(1, new_target_score)
+            else:
+                new_target_score = max(-1, new_target_score)
             return new_target_score
 
-    def calc_new_score(self, vertex: Node) -> float:
+    def calc_new_score(self, vertex: Node, current_timestep: int) -> float:
         if vertex.user_id in self.bad_guys:
+            return vertex.score
+        elif current_timestep >= self.good_guys_enter_timestep and vertex.user_id in self.good_guys:
             return vertex.score
         total = []
         for n_id in vertex.neighbours:
@@ -146,9 +159,10 @@ class Simulation:
             total.append(Simulation.spread(vertex, n))
             #total.append(vertex.score)
         out = sum(total) / len(total)
-        return out * 0.1 + 0.9 * vertex.score
+        modified_out = out * 0.1 + 0.9 * vertex.score
+        return modified_out
 
-    def run_one_timestep(self):
+    def run_one_timestep(self, current_timestep: int):
         # check if graph is empty
         assert self.graph.vertices, "graph empty"
         new_node_scores = {}
@@ -156,13 +170,16 @@ class Simulation:
         for vertex_id in self.graph.vertices:
             if vertex_id not in new_node_scores:
                 vertex = self.graph.vertices[vertex_id]
-                vertex_new_score = self.calc_new_score(vertex)
-                new_node_scores[vertex_id] = vertex_new_score
+                vertex_new_score = self.calc_new_score(vertex, current_timestep)
+            #total.append(vertex.score)
+                new_node_scores[vertex_id] = round(vertex_new_score,5) # round to 5 decimal places
 
         for vertex_id in self.graph.vertices:
             v = self.graph.vertices[vertex_id]
             v.score = new_node_scores[v.user_id]
-        
+        if current_timestep > 98:
+            print('Final Scores:')
+            print(self.graph.get_scores())
         print(self.graph.get_total_infected())
         #print(self.graph.get_scores()[0])
 
