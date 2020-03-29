@@ -9,7 +9,7 @@ import pandas as pd
 file1 = "Database 1A.csv"
 file2 =  "Database 1B.csv"
 file3 = "Gephi_Centrality_Scores.csv"
-GOOD_GUYS = [160, 6, 51, 178]
+BAD_GUYS = [160, 6, 51, 178]
 
 def storeCSV(file1, file2):
     with open(file1, mode='r') as infile:
@@ -125,14 +125,12 @@ def pick_nodes_per_cluster(GOOD_GUYS, centrality_table):
         filtered_table =  centrality_table[centrality_table['modularity class']==cluster]       
         rank_cols = ['Total Centrality Score', "Average Conversation",'external_cluster_num', 'external_friends_num']
         filtered_table['Rank'] = filtered_table.sort_values(rank_cols, ascending=False).groupby(rank_cols, sort=False).ngroup() + 1
-        if filtered_table.iloc[0].Id not in GOOD_GUYS:
-            removeNodesList.append(filtered_table.iloc[1].Id)
-        else:
+        if filtered_table.iloc[0].Id not in BAD_GUYS:
             removeNodesList.append(filtered_table.iloc[1].Id)
     remove_node_centrality  = centrality_table[centrality_table['Id'].isin(removeNodesList)]
     return removeNodesList, remove_node_centrality
 
-removeNodesList, remove_node_centrality = pick_nodes_per_cluster(GOOD_GUYS, centrality_table)
+removeNodesList, remove_node_centrality = pick_nodes_per_cluster(BAD_GUYS, centrality_table)
 
 #to see the impact of node removal, it could be best seen by simply removing the edges of the nodes
 #method writes a csv called removed_central_nodes
