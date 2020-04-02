@@ -155,6 +155,14 @@ def remove_nodes(removeNodesList, file2):
     written_dict = {}
     with open('removed_central_nodes.csv', 'w', newline='') as csv_file:
         writer = csv.writer(csv_file, delimiter=',')
+        with open(file1, mode='r') as infile:
+            reader = csv.reader(infile)
+            for rows in reader:
+                id = rows[0]
+                if id== "User ID" or int(id) not in removeNodesList:
+                    writer.writerow(rows)
+    with open('removed_central_edges.csv', 'w', newline='') as csv_file:
+        writer = csv.writer(csv_file, delimiter=',')
         with open(file2, mode='r') as infile:
             reader = csv.reader(infile)
             for rows in reader:
