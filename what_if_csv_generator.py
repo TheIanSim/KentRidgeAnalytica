@@ -11,6 +11,7 @@ file2 =  "Database 1B.csv"
 file3 = "Gephi_Centrality_Scores.csv"
 BAD_GUYS = [160, 6, 51, 178]
 BAD_GUYS_MODULARITY_CLASS = [0,5,2,10]
+GOOD_GUYS = [8, 50, 32, 63, 45, 109, 167, 86]
 
 def storeCSV(file1, file2):
     with open(file1, mode='r') as infile:
@@ -116,6 +117,7 @@ def calculate_external_cluster_connections(edges, centrality_table):
 
 centrality_table = calculate_external_cluster_connections(edges, centrality_table)
 
+#Assumes good guys are in different clusters
 def pick_nodes_per_cluster(GOOD_GUYS, centrality_table):
     removeNodesList = []
     #filter component class 1, 2 as they are disjointed from the main graph
@@ -126,10 +128,21 @@ def pick_nodes_per_cluster(GOOD_GUYS, centrality_table):
         filtered_table =  centrality_table[centrality_table['modularity class']==cluster]       
         rank_cols = ['Total Centrality Score', "Average Conversation",'external_cluster_num', 'external_friends_num']
         filtered_table['Rank'] = filtered_table.sort_values(rank_cols, ascending=False).groupby(rank_cols, sort=False).ngroup() + 1
-        #filter out removing nodes from original BAD_GUYS modularity class
-        if filtered_table.iloc[0].Id not in BAD_GUYS and filtered_table.iloc[0]["modularity class"] not in BAD_GUYS_MODULARITY_CLASS:
+        #Avoids removing good guy / bad guy nodes.
+        #Removes 1 node per modularity class
+        if filtered_table.iloc[0].Id not in BAD_GUYS and filtered_table.iloc[0].Id not in GOOD_GUYS:
             removeNodesList.append(filtered_table.iloc[1].Id)
+        else:
+            not_yet_removed = True
+            while not_yet_removed:
+                for i in range (1,len(filtered_table)):
+                    if filtered_table.iloc[i].Id not in BAD_GUYS and filtered_table.iloc[i].Id not in GOOD_GUYS:
+                        removeNodesList.append(filtered_table.iloc[i].Id)
+                        break
+                not_yet_removed = False
+           
     remove_node_centrality  = centrality_table[centrality_table['Id'].isin(removeNodesList)]
+    #print(remove_node_centrality) 
     return removeNodesList, remove_node_centrality
 
 removeNodesList, remove_node_centrality = pick_nodes_per_cluster(BAD_GUYS, centrality_table)
