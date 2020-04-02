@@ -149,8 +149,10 @@ removeNodesList, remove_node_centrality = pick_nodes_per_cluster(BAD_GUYS, centr
 
 #to see the impact of node removal, it could be best seen by simply removing the edges of the nodes
 #method writes a csv called removed_central_nodes
+#ensure no duplicates
 def remove_nodes(removeNodesList, file2):
     fieldnames = ['Source', 'Target',"Conversation Messages"]
+    written_dict = {}
     with open('removed_central_nodes.csv', 'w', newline='') as csv_file:
         writer = csv.writer(csv_file, delimiter=',')
         with open(file2, mode='r') as infile:
@@ -158,6 +160,20 @@ def remove_nodes(removeNodesList, file2):
             for rows in reader:
                 source = rows[0]; target = rows[1]; messages = rows[2]
                 if rows[0] == "Source" or ((int(source) not in removeNodesList) and (int(target) not in removeNodesList)):
-                    writer.writerow(rows)
-
+                    if rows[0] == "Source":
+                        writer.writerow(rows)
+                    else:
+                        source = int(rows[0]); target = int(rows[1]); messages = int(rows[2])
+                        if source not in written_dict:
+                            if target not in written_dict:
+                                written_dict[source] = [target]
+                                writer.writerow(rows)
+                            elif source not in written_dict[target]:
+                                written_dict[target].append(source)
+                                writer.writerow(rows)
+                        else:
+                            if target not in written_dict[source]:
+                                if target not in written_dict or source not in written_dict[target]: #no key
+                                    written_dict[source].append(target)
+                                    writer.writerow(rows)
 remove_nodes(removeNodesList, file2)
