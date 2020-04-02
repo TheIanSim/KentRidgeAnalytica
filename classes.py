@@ -118,6 +118,15 @@ class Simulation:
             source.add_neighbour(target,row.iloc[2])
             target.add_neighbour(source,row.iloc[2])
 
+    def remove_all_singular_nodes(self):
+        nodes_to_remove = []
+        for node_id, node in self.graph.vertices.items():
+            if len(node.neighbours) == 0:
+                nodes_to_remove.append(node.user_id)
+        print(nodes_to_remove)
+        for node_id in nodes_to_remove:
+            self.graph.remove_vertex(node_id)
+                
 
     def data_out_to_file(self, filename):
         self.output.df.to_csv(filename)
@@ -158,9 +167,12 @@ class Simulation:
             n = self.graph.vertices[n_id]
             total.append(Simulation.spread(vertex, n))
             #total.append(vertex.score)
-        out = sum(total) / len(total)
-        modified_out = out * 0.1 + 0.9 * vertex.score
-        return modified_out
+        if len(total) == 0:
+            return vertex.score
+        else:
+            out = sum(total) / len(total)
+            modified_out = out * 0.1 + 0.9 * vertex.score
+            return modified_out
 
     def run_one_timestep(self, current_timestep: int):
         # check if graph is empty
@@ -195,8 +207,9 @@ class Output:
             for k,v in score_dict.items():
                 new_row = {'Id':k,'Label':k,'Timeset':[timestep],'Score':"["+str(timestep)+", "+str(v)+"]"}
                 output_df = output_df.append(new_row, ignore_index=True)
-
+            output_df.set_index('Id',inplace = True)
         else:
+
             for k,v in score_dict.items():
                 output_df.loc[k,'Timeset'].append(timestep)
                 output_df.loc[k,'Score'] = output_df.loc[k,'Score'] + "; ["+ str(timestep)+", "+str(v) +"]"
