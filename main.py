@@ -37,4 +37,5 @@ for i in range(number_of_timesteps):
     score_dict = test_sim.graph.get_scores()
     test_sim.output.add_timestep_scores(score_dict, i)
 
-test_sim.data_out_to_file("gephi_output7.csv")
+test_sim.data_out_to_file("gephi_output_7.csv")
+#test_sim.data_out_to_file("gephi_output_whatif_1.csv")
