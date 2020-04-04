@@ -41,13 +41,27 @@ class Graph:
     def get_scores(self):
         return dict([(v, self.vertices[v].score) for v in self.vertices])
     
-    def get_total_infected(self):
+    def get_mean_infected_score(self):
         scores = self.get_scores()
         max = len(scores)
         total = 0
         for key in scores:
             total += scores[key]
         return total/max
+    
+    def get_number_infected(self):
+        scores = self.get_scores()
+        positive = 0
+        neutral = 0
+        negative = 0
+        for key in scores:
+            if scores[key] >0:
+                positive += 1
+            elif scores[key] <0:
+                negative += 1
+            else:
+                neutral += 1
+        return "Number of positive " + str(positive) + " negative " +str(negative) + " neutral " +str(neutral)
 
     def add_vertex(self, v: Node) -> None:
         # do not allow adding if already inside
@@ -192,7 +206,8 @@ class Simulation:
         if current_timestep > 98:
             print('Final Scores:')
             print(self.graph.get_scores())
-        print(self.graph.get_total_infected())
+        number_infected = self.graph.get_number_infected()
+        print("Mean infected score:" +str(self.graph.get_mean_infected_score())+" "+number_infected)
         #print(self.graph.get_scores()[0])
 
 class Output:
