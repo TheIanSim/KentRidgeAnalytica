@@ -1,7 +1,7 @@
 import csv
 import numpy as np
 
-EDGE_TABLE_FILE = './Database 1B.csv'
+EDGE_TABLE_FILE = '../Database 1B.csv'
 NUMBER_OF_NODES = 180
 NEW_EDGE_TABLE_FILE = './Edge_Table_Triadic_Closure.csv'
 
@@ -48,7 +48,7 @@ def get_new_links_via_triadic_closure(adj_list, adj_matrix):
                 
                 node_pair = (n1, n2) if n1 < n2 else (n2, n1)
                 if node_pair not in new_links: new_links[node_pair] = 0
-                estimated_msg_cnt = round(np.mean([m1, m2]) * 0.1, 2)
+                estimated_msg_cnt = round(np.mean([m1, m2]) * 0.3, 2)
                 new_links[node_pair] += estimated_msg_cnt
     
     new_links_list = [[pair[0], pair[1], num_msg] for pair, num_msg in new_links.items()]
@@ -65,7 +65,7 @@ def create_new_edge_table(new_links):
 def main():
     edge_list = get_edge_list()
     adj_matrix = get_adj_matrix(edge_list)
-    strong_edges = filter_for_strong_edges(edge_list=edge_list)
+    strong_edges = filter_for_strong_edges(edge_list=edge_list, percentile=75)
     strong_edges_adj_list = get_adj_list(strong_edges)
     new_links = get_new_links_via_triadic_closure(strong_edges_adj_list, adj_matrix)
     create_new_edge_table(new_links)

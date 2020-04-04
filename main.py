@@ -1,7 +1,7 @@
 from classes import Graph, Node, Simulation
 
 NODE_TABLE_INPUT_FILE = "Database 1A.csv" # "removed_central_nodes.csv"
-EDGE_TABLE_INPUT_FILE = "Edge_Table_Triadic_Closure.csv" # "Database 1B.csv"
+EDGE_TABLE_INPUT_FILE = "triadic_closure/Edge_Table_Triadic_Closure.csv" # "Database 1B.csv"
 GEPHI_OUTPUT_FILE = "gephi_output_triadic_closure.csv"
 
 bad_guys = [6, 160, 51, 178]
@@ -38,4 +38,4 @@ for i in range(number_of_timesteps):
     score_dict = test_sim.graph.get_scores()
     test_sim.output.add_timestep_scores(score_dict, i)
 
-test_sim.data_out_to_file(GEPHI_OUTPUT_FILE)
+test_sim.data_out_to_file(f'outputs/{GEPHI_OUTPUT_FILE}')
