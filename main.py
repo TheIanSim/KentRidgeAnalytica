@@ -1,5 +1,9 @@
 from classes import Graph, Node, Simulation
 
+NODE_TABLE_INPUT_FILE = "Database 1A.csv" # "removed_central_nodes.csv"
+EDGE_TABLE_INPUT_FILE = "Edge_Table_Triadic_Closure.csv" # "Database 1B.csv"
+GEPHI_OUTPUT_FILE = "gephi_output_triadic_closure.csv"
+
 bad_guys = [6, 160, 51, 178]
 number_of_timesteps = 100
 
@@ -13,11 +17,8 @@ test_sim = Simulation(
     good_guys=good_guys,
     good_guys_enter_timestep=good_guys_enter_timestep,
 )
-test_sim.load_vertices_from_file("Database 1A.csv", bad_guys)
-#test_sim.load_vertices_from_file("removed_central_nodes.csv", bad_guys)
-test_sim.load_edges_from_file("Database 1B.csv")
-#test_sim.load_edges_from_file("removed_central_edges.csv")
-
+test_sim.load_vertices_from_file(NODE_TABLE_INPUT_FILE, bad_guys)
+test_sim.load_edges_from_file(EDGE_TABLE_INPUT_FILE)
 
 
 for i in range(number_of_timesteps):
@@ -37,5 +38,4 @@ for i in range(number_of_timesteps):
     score_dict = test_sim.graph.get_scores()
     test_sim.output.add_timestep_scores(score_dict, i)
 
-test_sim.data_out_to_file("gephi_output_7.csv")
-#test_sim.data_out_to_file("gephi_output_whatif_1.csv")
+test_sim.data_out_to_file(GEPHI_OUTPUT_FILE)
