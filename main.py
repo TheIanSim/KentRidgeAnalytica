@@ -14,9 +14,12 @@ test_sim = Simulation(
     good_guys_enter_timestep=good_guys_enter_timestep,
 )
 test_sim.load_vertices_from_file("Database 1A.csv", bad_guys)
-#test_sim.load_vertices_from_file("removed_central_nodes.csv", bad_guys)
 test_sim.load_edges_from_file("Database 1B.csv")
+#test_sim.load_edges_from_file("Edge_Table_Triadic_Closure.csv")
+
+#test_sim.load_vertices_from_file("removed_central_nodes.csv", bad_guys)
 #test_sim.load_edges_from_file("removed_central_edges.csv")
+
 
 
 
@@ -39,3 +42,4 @@ for i in range(number_of_timesteps):
 
 test_sim.data_out_to_file("gephi_output_7.csv")
 #test_sim.data_out_to_file("gephi_output_whatif_1.csv")
+#test_sim.data_out_to_file("gephi_output_whatif_triadic_1.csv")
