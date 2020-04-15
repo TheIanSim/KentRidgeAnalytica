@@ -5,7 +5,7 @@
 
 ### Original Scenario
 
-* In `main.py`, ensure that the variable `SCENARIO` = `0`.
+* In `main.py`(line 6), ensure that the variable `SCENARIO` = `0`.
 * Run `main.py`: `python main.py`.
 * The output file will appear in the `outputs` folder as `gephi_output_main.csv`.
 * By importing this file into Gephi, you can create the animation showing how the fake news would spread in the network.
@@ -15,7 +15,7 @@
 
 ### What-If Scenario #1: Removal of Central Nodes
 
-* In `main.py`, ensure that the variable `SCENARIO` = `1`.
+* In `main.py`(line 6), ensure that the variable `SCENARIO` = `1`.
 * Run `main.py`: `python main.py`.
 * The output file will appear in the `outputs` folder as `gephi_output_central_nodes_removed.csv`.
 * By importing this file into Gephi, you can create the animation showing how the fake news would spread in the network.
@@ -23,7 +23,7 @@
 
 ### What-If Scenario #2: Addition of Edges (via Enforcement of Triadic Closure property)
 
-* In `main.py`, ensure that the variable `SCENARIO` = `2`.
+* In `main.py`(line 6), ensure that the variable `SCENARIO` = `2`.
 * Run `main.py`: `python main.py`.
 * The output file will appear in the `outputs` folder as `gephi_output_triadic_closure.csv`.
 * By importing this file into Gephi, you can create the animation showing how the fake news would spread in the network.
