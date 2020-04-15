@@ -23,6 +23,7 @@ def get_adj_matrix(edge_list):
 def filter_for_strong_edges(edge_list, percentile=90):
     num_messages_per_link = [edge[-1] for edge in edge_list]
     num_messages_threshold = np.percentile(num_messages_per_link, percentile)
+    print(f'Threshold for strong links: {num_messages_threshold} msgs; {percentile} percentile.')
     return [edge for edge in edge_list if edge[-1] >= num_messages_threshold]
 
 def get_adj_list(edges):
@@ -48,7 +49,7 @@ def get_new_links_via_triadic_closure(adj_list, adj_matrix):
                 
                 node_pair = (n1, n2) if n1 < n2 else (n2, n1)
                 if node_pair not in new_links: new_links[node_pair] = 0
-                estimated_msg_cnt = round(np.mean([m1, m2]) * 0.3, 2)
+                estimated_msg_cnt = int(np.mean([m1, m2]) * 0.4)
                 new_links[node_pair] += estimated_msg_cnt
     
     new_links_list = [[pair[0], pair[1], num_msg] for pair, num_msg in new_links.items()]
@@ -62,6 +63,14 @@ def create_new_edge_table(new_links):
             writer.writerows(list(reader))
         writer.writerows(new_links)
 
+def print_outcome(num_new_links):
+    with open(NEW_EDGE_TABLE_FILE, 'r') as f:
+        reader = csv.reader(f, delimiter=",")
+        next(reader, None) # skip the header row
+        edge_list = list(reader) # list of lists
+    print(f'Number of new links created: {num_new_links}')
+    print(f'File `{NEW_EDGE_TABLE_FILE}` created/updated. Total number of links: {len(edge_list)}.')
+
 def main():
     edge_list = get_edge_list()
     adj_matrix = get_adj_matrix(edge_list)
@@ -69,6 +78,7 @@ def main():
     strong_edges_adj_list = get_adj_list(strong_edges)
     new_links = get_new_links_via_triadic_closure(strong_edges_adj_list, adj_matrix)
     create_new_edge_table(new_links)
+    print_outcome(num_new_links=len(new_links))
 
 if __name__ == "__main__":
     main()
