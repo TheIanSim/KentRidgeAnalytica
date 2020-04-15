@@ -26,12 +26,6 @@ test_sim = Simulation(
     good_guys=good_guys,
     good_guys_enter_timestep=good_guys_enter_timestep,
 )
-#test_sim.load_vertices_from_file("Database 1A.csv", bad_guys)
-#test_sim.load_edges_from_file("Database 1B.csv")
-
-#test_sim.load_vertices_from_file("removed_central_nodes.csv", bad_guys)
-#test_sim.load_edges_from_file("removed_central_edges.csv")
-
 test_sim.load_vertices_from_file(NODE_TABLE_INPUT_FILE, bad_guys)
 test_sim.load_edges_from_file(EDGE_TABLE_INPUT_FILE) 
 
