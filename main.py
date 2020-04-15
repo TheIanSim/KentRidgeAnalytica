@@ -7,7 +7,7 @@ SCENARIO = 0
 
 SETTINGS = [
     ["Database 1A.csv", "Database 1B.csv", "gephi_output_main.csv"],
-    ["nodes_removal/removed_central_nodes.csv", "nodes_removal/removed_central_edges.csv", "gephi_output_central_nodes_removed"],
+    ["nodes_removal/removed_central_nodes.csv", "nodes_removal/removed_central_edges.csv", "gephi_output_central_nodes_removed.csv"],
     ["Database 1A.csv", "triadic_closure/Edge_Table_Triadic_Closure.csv", "gephi_output_triadic_closure.csv"]
 ]
 
