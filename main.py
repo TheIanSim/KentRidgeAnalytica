@@ -1,15 +1,17 @@
 from classes import Graph, Node, Simulation
 
-# NODE_TABLE_INPUT_FILE = "Database 1A.csv"
-NODE_TABLE_INPUT_FILE = "removed_central_nodes.csv"
+# 0 -> Original Scenario
+# 1 -> Scenario with central nodes removed
+# 2 -> Scenario with edges added (using Triadic Closure)
+SCENARIO = 0
 
-# EDGE_TABLE_INPUT_FILE = "Database 1B.csv"
-# EDGE_TABLE_INPUT_FILE = "triadic_closure/Edge_Table_Triadic_Closure.csv"
-EDGE_TABLE_INPUT_FILE = "removed_central_edges.csv"
+SETTINGS = [
+    ["Database 1A.csv", "Database 1B.csv", "gephi_output_main.csv"],
+    ["nodes_removal/removed_central_nodes.csv", "nodes_removal/removed_central_edges.csv", "gephi_output_central_nodes_removed"],
+    ["Database 1A.csv", "triadic_closure/Edge_Table_Triadic_Closure.csv", "gephi_output_triadic_closure.csv"]
+]
 
-# GEPHI_OUTPUT_FILE = "gephi_output_main.csv"
-# GEPHI_OUTPUT_FILE = "gephi_output_triadic_closure.csv"
-GEPHI_OUTPUT_FILE = "gephi_output_central_removed"
+NODE_TABLE_INPUT_FILE, EDGE_TABLE_INPUT_FILE, GEPHI_OUTPUT_FILE = SETTINGS[SCENARIO]
 
 bad_guys = [6, 160, 51, 178]
 number_of_timesteps = 101
@@ -50,6 +52,4 @@ for i in range(number_of_timesteps):
     score_dict = test_sim.graph.get_scores()
     test_sim.output.add_timestep_scores(score_dict, i)
 
-test_sim.data_out_to_file("gephi_output_7.csv")
-#test_sim.data_out_to_file("gephi_output_whatif_1.csv")
 test_sim.data_out_to_file(f'outputs/{GEPHI_OUTPUT_FILE}')

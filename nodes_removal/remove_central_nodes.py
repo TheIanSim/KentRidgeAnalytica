@@ -6,8 +6,8 @@ import pandas as pd
 
 #Reads Nodes
 
-file1 = "Database 1A.csv"
-file2 =  "Database 1B.csv"
+file1 = "../Database 1A.csv"
+file2 =  "../Database 1B.csv"
 file3 = "Gephi_Centrality_Scores.csv"
 BAD_GUYS = [160, 6, 51, 178]
 BAD_GUYS_MODULARITY_CLASS = [0,5,2,10]
