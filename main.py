@@ -1,11 +1,18 @@
 from classes import Graph, Node, Simulation
 
-NODE_TABLE_INPUT_FILE = "Database 1A.csv" # "removed_central_nodes.csv"
-EDGE_TABLE_INPUT_FILE = "triadic_closure/Edge_Table_Triadic_Closure.csv" # "Database 1B.csv"
-GEPHI_OUTPUT_FILE = "gephi_output_triadic_closure.csv"
+# NODE_TABLE_INPUT_FILE = "Database 1A.csv"
+NODE_TABLE_INPUT_FILE = "removed_central_nodes.csv"
+
+# EDGE_TABLE_INPUT_FILE = "Database 1B.csv"
+# EDGE_TABLE_INPUT_FILE = "triadic_closure/Edge_Table_Triadic_Closure.csv"
+EDGE_TABLE_INPUT_FILE = "removed_central_edges.csv"
+
+# GEPHI_OUTPUT_FILE = "gephi_output_main.csv"
+# GEPHI_OUTPUT_FILE = "gephi_output_triadic_closure.csv"
+GEPHI_OUTPUT_FILE = "gephi_output_central_removed"
 
 bad_guys = [6, 160, 51, 178]
-number_of_timesteps = 100
+number_of_timesteps = 101
 
 good_guys = [8, 50, 32, 63, 45, 109, 167, 86]
 good_guys_enter_timestep = 5
@@ -24,7 +31,7 @@ test_sim = Simulation(
 #test_sim.load_edges_from_file("removed_central_edges.csv")
 
 test_sim.load_vertices_from_file(NODE_TABLE_INPUT_FILE, bad_guys)
-test_sim.load_edges_from_file(EDGE_TABLE_INPUT_FILE)
+test_sim.load_edges_from_file(EDGE_TABLE_INPUT_FILE) 
 
 for i in range(number_of_timesteps):
     # for the first timestep, do nothing except log intial scores
