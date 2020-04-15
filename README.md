@@ -10,7 +10,7 @@
 * The output file will appear in the `outputs` folder as `gephi_output_main.csv`.
 * By importing this file into Gephi, you can create the animation showing how the fake news would spread in the network.
 
-![How fake news spread in the network]('img/spread_original.gif')
+![How fake news spread in the network](img/spread_original.gif)
 
 ### What-If Scenario #1: Removal of Central Nodes
 
